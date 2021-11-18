@@ -1,0 +1,9 @@
+.active {
+	background-color: darkorange;
+}
+.correct {
+	color: green;
+}
+.incorrect {
+	color: red;
+}
