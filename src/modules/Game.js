@@ -11,23 +11,34 @@ function Game({toggleMode}) {
 	const [text, setText] = useState('')
 	const [cursor, setCursor] = useState(0)
 	const [correct, setCorrect] = useState([])
+	const [popup, setPopup] = useState(false)
+	const [restart, setRestart] = useState(false)
+	function newGame() {
+		setText('')
+		setCursor(0)
+		setCorrect([])
+		setPopup(false)
+		setRestart(!restart)
+	}
 	useEffect(() => {
 		const fetchData = async () => {
 			const newText = await getNewText()
 			setText(newText[0])
 		}
 		fetchData()
-	}, [])
+	}, [restart])
 	useEffect(() => {
 		function handleKeyPressed(event) {
-			if (event.key == text[cursor]) {
-				setCorrect((correct) => [...correct, true])
-			} else {
-				setCorrect((correct) => [...correct, false])
+			if (cursor < text.length) {
+				if (event.key == text[cursor]) {
+					setCorrect((correct) => [...correct, true])
+				} else {
+					setCorrect((correct) => [...correct, false])
+				}
+				setCursor((cursor) => {
+					return cursor + 1
+				})
 			}
-			setCursor((cursor) => {
-				return cursor + 1
-			})
 		}
 		document.addEventListener('keypress', handleKeyPressed)
 		return () => {
@@ -35,20 +46,36 @@ function Game({toggleMode}) {
 		}
 	}, [text, cursor])
 	useEffect(() => {
-		if (cursor >= text.length) {
-			console.log('stop')
+		if (cursor == text.length && cursor != 0) {
+			console.log(cursor, text.length)
+			setPopup(true)
 		}
-	}, [text, cursor])
+	}, [cursor])
+	function getScore() {
+		if (correct.length > 0) {
+			return (
+				<span>
+					{correct.filter((item) => item).length}/{correct.length},{' '}
+					{(
+						(correct.filter((item) => item).length /
+							correct.length) *
+						100
+					).toFixed(2)}
+					%
+				</span>
+			)
+		} else {
+			return (
+				<span>
+					{correct.filter((item) => item).length}/{correct.length}
+				</span>
+			)
+		}
+	}
 	return (
 		<div>
 			Game module <button onClick={toggleMode}>Menu</button>
-			<span>
-				{correct.filter((item) => item).length}/{correct.length},{' '}
-				{(
-					correct.filter((item) => item).length / correct.length
-				).toFixed(2) * 100}
-				%
-			</span>
+			{getScore()}
 			<div>
 				{text.split('').map((item, index) => {
 					return (
@@ -68,6 +95,10 @@ function Game({toggleMode}) {
 						</span>
 					)
 				})}
+			</div>
+			<div className={[popup ? 'show' : 'hide']}>
+				<button onClick={newGame}>Start again</button>
+				<button onClick={toggleMode}>To menu</button>
 			</div>
 		</div>
 	)
