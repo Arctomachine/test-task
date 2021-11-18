@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react'
+import Game from './modules/Game'
+import Menu from './modules/Menu'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+	const [mode, setMode] = useState(false)
 
-export default App;
+	function toggleMode() {
+		setMode(!mode)
+	}
+
+	return (
+		<div>
+			{mode ? (
+				<Game toggleMode={toggleMode} />
+			) : (
+				<Menu toggleMode={toggleMode} />
+			)}
+		</div>
+	)
+}
+export default App
