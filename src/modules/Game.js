@@ -11,12 +11,14 @@ function Game({toggleMode}) {
 	const [text, setText] = useState('')
 	const [cursor, setCursor] = useState(0)
 	const [correct, setCorrect] = useState([])
+	const [mistakes, setMistakes] = useState([])
 	const [popup, setPopup] = useState(false)
 	const [restart, setRestart] = useState(false)
 	function newGame() {
 		setText('')
 		setCursor(0)
 		setCorrect([])
+		setMistakes([])
 		setPopup(false)
 		setRestart(!restart)
 	}
@@ -32,8 +34,12 @@ function Game({toggleMode}) {
 			if (cursor < text.length) {
 				if (event.key == text[cursor]) {
 					setCorrect((correct) => [...correct, true])
+					setMistakes((mistakes) => [...mistakes, null])
 				} else {
 					setCorrect((correct) => [...correct, false])
+					setMistakes((mistakes) => {
+						return [...mistakes, event.key]
+					})
 				}
 				setCursor((cursor) => {
 					return cursor + 1
@@ -90,6 +96,11 @@ function Game({toggleMode}) {
 									? 'incorrect'
 									: null,
 							]}
+							title={
+								mistakes[index]
+									? 'You typed: ' + mistakes[index]
+									: null
+							}
 						>
 							{item}
 						</span>
