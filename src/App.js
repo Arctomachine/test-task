@@ -8,11 +8,15 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {
 	const [mode, setMode] = useState(false)
+	const [number, setNumber] = useState('')
 
 	function toggleMode() {
 		setMode(!mode)
 	}
 
+	function getNumber(number) {
+		setNumber(number)
+	}
 	return (
 		<Container>
 			<Row>
@@ -27,9 +31,9 @@ function App() {
 					}}
 				>
 					{mode ? (
-						<Game toggleMode={toggleMode} />
+						<Game toggleMode={toggleMode} number={number} />
 					) : (
-						<Menu toggleMode={toggleMode} />
+						<Menu toggleMode={toggleMode} getNumber={getNumber} />
 					)}
 				</Col>
 				<Col></Col>

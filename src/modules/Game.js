@@ -9,14 +9,17 @@ import {
 	Spinner,
 } from 'react-bootstrap'
 
-async function getNewText() {
+async function getNewText(number = 2) {
+	if (typeof number != 'number') {
+		number = 2
+	}
 	const res = await fetch(
-		'https://baconipsum.com/api/?type=meat-and-filler&sentences=1'
+		'https://baconipsum.com/api/?type=meat-and-filler&sentences=' + number
 	)
 	const text = await res.json()
 	return text
 }
-function Game({toggleMode}) {
+function Game({toggleMode, number}) {
 	const [text, setText] = useState('')
 	const [cursor, setCursor] = useState(0)
 	const [correct, setCorrect] = useState([])
@@ -41,7 +44,7 @@ function Game({toggleMode}) {
 	}
 	useEffect(() => {
 		const fetchData = async () => {
-			const newText = await getNewText()
+			const newText = await getNewText(number)
 			setText(newText[0])
 			setIsLoading(false)
 		}

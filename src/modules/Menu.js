@@ -1,9 +1,33 @@
-import React from 'react'
-import {Button, Container} from 'react-bootstrap'
+import React, {useState} from 'react'
+import {Button, Container, FormControl, InputGroup} from 'react-bootstrap'
 
-function Menu({toggleMode}) {
+function Menu({toggleMode, getNumber}) {
+	const [number, setNumber] = useState(2)
+	function handleNumber(event) {
+		const input = parseInt(event.target.value)
+		if (typeof input == 'number' || input <= 5) {
+			setNumber(input)
+			getNumber(input)
+		} else {
+			setNumber(2)
+			getNumber(2)
+		}
+	}
 	return (
 		<div className='centered'>
+			<div>
+				<label>
+					How many sentences?{' '}
+					<input
+						type='number'
+						className='input-number'
+						placeholder='2'
+						onChange={handleNumber}
+						value={number}
+					/>
+				</label>
+			</div>
+			<br />
 			<Button onClick={toggleMode}>Start</Button>
 		</div>
 	)
