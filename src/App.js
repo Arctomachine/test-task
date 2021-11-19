@@ -10,10 +10,12 @@ function App() {
 	const [mode, setMode] = useState(false)
 	const [number, setNumber] = useState('')
 
+	// switch between menu and game
 	function toggleMode() {
 		setMode(!mode)
 	}
 
+	// number of sentences from menu module
 	function getNumber(number) {
 		setNumber(number)
 	}

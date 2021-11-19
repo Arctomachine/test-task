@@ -9,6 +9,7 @@ import {
 	Spinner,
 } from 'react-bootstrap'
 
+// get json response from api and return plain text
 async function getNewText(number = 2) {
 	if (typeof number != 'number') {
 		number = 2
@@ -24,7 +25,7 @@ function Game({toggleMode, number}) {
 	const [cursor, setCursor] = useState(0)
 	const [correct, setCorrect] = useState([])
 	const [mistakes, setMistakes] = useState([])
-	const [timer, setTimer] = useState(null)
+	const [timer, setTimer] = useState(null) // reference to interval
 	const [timerStart, setTimerStart] = useState(null)
 	const [timerCurrent, setTimerCurrent] = useState(null)
 	const [isTimerActive, setIsTimerActive] = useState(false)
@@ -32,6 +33,8 @@ function Game({toggleMode, number}) {
 	const [popup, setPopup] = useState(false)
 	const [restart, setRestart] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
+
+	// reset values for new game session
 	function newGame() {
 		setText('')
 		setCursor(0)
@@ -42,6 +45,8 @@ function Game({toggleMode, number}) {
 		setIsLoading(true)
 		setRestart(!restart)
 	}
+
+	// get new text after restart
 	useEffect(() => {
 		const fetchData = async () => {
 			const newText = await getNewText(number)
@@ -50,8 +55,11 @@ function Game({toggleMode, number}) {
 		}
 		fetchData()
 	}, [restart, number])
+
+	// process user input
 	useEffect(() => {
 		function handleKeyPressed(event) {
+			// if it is first key in this session
 			if (cursor === 0) {
 				setTimerStart(Date.now())
 				setIsTimerActive(true)
@@ -60,26 +68,34 @@ function Game({toggleMode, number}) {
 				}, 100)
 				setTimer(interval)
 			}
+
+			// all other keys
 			if (cursor < text.length) {
+				// correct answer
 				if (event.key === text[cursor]) {
 					setCorrect((correct) => [...correct, true])
 					setMistakes((mistakes) => [...mistakes, null])
 				} else {
+					// incorrect inswer
 					setCorrect((correct) => [...correct, false])
 					setMistakes((mistakes) => {
 						return [...mistakes, event.key]
 					})
 				}
+
+				// go to next symbol
 				setCursor((cursor) => {
 					return cursor + 1
 				})
 			}
 		}
-		document.addEventListener('keypress', handleKeyPressed)
+		document.addEventListener('keypress', handleKeyPressed) // bind global listener
 		return () => {
 			document.removeEventListener('keypress', handleKeyPressed)
 		}
 	}, [text, cursor])
+
+	// when finished
 	useEffect(() => {
 		if (cursor === text.length && cursor !== 0) {
 			setIsTimerActive(false)
@@ -87,6 +103,8 @@ function Game({toggleMode, number}) {
 			setPopup(true)
 		}
 	}, [cursor, text])
+
+	// calculate speed
 	useEffect(() => {
 		if (isTimerActive) {
 			setSymbolScore(() => {
@@ -96,6 +114,8 @@ function Game({toggleMode, number}) {
 			})
 		}
 	}, [isTimerActive, correct, timerCurrent])
+
+	// calculate answers and accuracy
 	function getScore() {
 		const data = []
 		if (correct.length === 0) {

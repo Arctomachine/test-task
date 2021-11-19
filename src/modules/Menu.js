@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {Button} from 'react-bootstrap'
 
 function Menu({toggleMode, getNumber}) {
+	// number of sentences: send to parent and control input field
 	const [number, setNumber] = useState(2)
 	function handleNumber(event) {
 		const input = parseInt(event.target.value)
