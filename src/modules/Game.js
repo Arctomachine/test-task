@@ -12,6 +12,11 @@ function Game({toggleMode}) {
 	const [cursor, setCursor] = useState(0)
 	const [correct, setCorrect] = useState([])
 	const [mistakes, setMistakes] = useState([])
+	const [timer, setTimer] = useState(null)
+	const [timerStart, setTimerStart] = useState(null)
+	const [timerCurrent, setTimerCurrent] = useState(null)
+	const [isTimerActive, setIsTimerActive] = useState(false)
+	const [symbolScore, setSymbolScore] = useState(0)
 	const [popup, setPopup] = useState(false)
 	const [restart, setRestart] = useState(false)
 	function newGame() {
@@ -20,6 +25,7 @@ function Game({toggleMode}) {
 		setCorrect([])
 		setMistakes([])
 		setPopup(false)
+		setSymbolScore(0)
 		setRestart(!restart)
 	}
 	useEffect(() => {
@@ -31,6 +37,14 @@ function Game({toggleMode}) {
 	}, [restart])
 	useEffect(() => {
 		function handleKeyPressed(event) {
+			if (cursor == 0) {
+				setTimerStart(Date.now())
+				setIsTimerActive(true)
+				const interval = setInterval(() => {
+					setTimerCurrent(Date.now())
+				}, 100)
+				setTimer(interval)
+			}
 			if (cursor < text.length) {
 				if (event.key == text[cursor]) {
 					setCorrect((correct) => [...correct, true])
@@ -53,10 +67,20 @@ function Game({toggleMode}) {
 	}, [text, cursor])
 	useEffect(() => {
 		if (cursor == text.length && cursor != 0) {
-			console.log(cursor, text.length)
+			setIsTimerActive(false)
+			clearInterval(timer)
 			setPopup(true)
 		}
-	}, [cursor])
+	}, [cursor, text])
+	useEffect(() => {
+		if (isTimerActive) {
+			setSymbolScore(() => {
+				const symbols = correct.filter((item) => item).length
+				const time = (Date.now() - timerStart) / 1000 / 60
+				return symbols / time
+			})
+		}
+	}, [isTimerActive, correct, timerCurrent])
 	function getScore() {
 		if (correct.length > 0) {
 			return (
@@ -81,7 +105,8 @@ function Game({toggleMode}) {
 	return (
 		<div>
 			Game module <button onClick={toggleMode}>Menu</button>
-			{getScore()}
+			{getScore()}{' '}
+			<span>{Math.round(symbolScore)} symbols per minute</span>
 			<div>
 				{text.split('').map((item, index) => {
 					return (
