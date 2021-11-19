@@ -49,10 +49,10 @@ function Game({toggleMode, number}) {
 			setIsLoading(false)
 		}
 		fetchData()
-	}, [restart])
+	}, [restart, number])
 	useEffect(() => {
 		function handleKeyPressed(event) {
-			if (cursor == 0) {
+			if (cursor === 0) {
 				setTimerStart(Date.now())
 				setIsTimerActive(true)
 				const interval = setInterval(() => {
@@ -61,7 +61,7 @@ function Game({toggleMode, number}) {
 				setTimer(interval)
 			}
 			if (cursor < text.length) {
-				if (event.key == text[cursor]) {
+				if (event.key === text[cursor]) {
 					setCorrect((correct) => [...correct, true])
 					setMistakes((mistakes) => [...mistakes, null])
 				} else {
@@ -81,7 +81,7 @@ function Game({toggleMode, number}) {
 		}
 	}, [text, cursor])
 	useEffect(() => {
-		if (cursor == text.length && cursor != 0) {
+		if (cursor === text.length && cursor !== 0) {
 			setIsTimerActive(false)
 			clearInterval(timer)
 			setPopup(true)
@@ -98,7 +98,7 @@ function Game({toggleMode, number}) {
 	}, [isTimerActive, correct, timerCurrent])
 	function getScore() {
 		const data = []
-		if (correct.length == 0) {
+		if (correct.length === 0) {
 			data.push('-')
 			data.push('-')
 			data.push('-')
@@ -133,7 +133,7 @@ function Game({toggleMode, number}) {
 								className={[
 									correct[index]
 										? 'correct'
-										: index == cursor
+										: index === cursor
 										? 'active'
 										: index < cursor
 										? 'incorrect'

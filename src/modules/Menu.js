@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Button, Container, FormControl, InputGroup} from 'react-bootstrap'
+import {Button} from 'react-bootstrap'
 
 function Menu({toggleMode, getNumber}) {
 	const [number, setNumber] = useState(2)
