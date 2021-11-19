@@ -9,8 +9,23 @@
 	text-decoration: underline;
 }
 .show {
-	display: block;
+	display: flex;
+	opacity: 1;
+	transition: 1s;
 }
 .hide {
-	display: none;
+	opacity: 0;
+}
+.text {
+	font-family: monospace;
+	font-size: 1.5em;
+	padding: 4em;
+	transition: 1s;
+	text-align: center;
+}
+.text span {
+	padding: auto 1em;
+}
+.centered {
+	text-align: center;
 }

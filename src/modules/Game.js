@@ -1,4 +1,13 @@
 import React, {useEffect, useState} from 'react'
+import {
+	ButtonGroup,
+	Button,
+	Col,
+	Container,
+	Navbar,
+	Row,
+	Spinner,
+} from 'react-bootstrap'
 
 async function getNewText() {
 	const res = await fetch(
@@ -19,6 +28,7 @@ function Game({toggleMode}) {
 	const [symbolScore, setSymbolScore] = useState(0)
 	const [popup, setPopup] = useState(false)
 	const [restart, setRestart] = useState(false)
+	const [isLoading, setIsLoading] = useState(true)
 	function newGame() {
 		setText('')
 		setCursor(0)
@@ -26,12 +36,14 @@ function Game({toggleMode}) {
 		setMistakes([])
 		setPopup(false)
 		setSymbolScore(0)
+		setIsLoading(true)
 		setRestart(!restart)
 	}
 	useEffect(() => {
 		const fetchData = async () => {
 			const newText = await getNewText()
 			setText(newText[0])
+			setIsLoading(false)
 		}
 		fetchData()
 	}, [restart])
@@ -82,59 +94,70 @@ function Game({toggleMode}) {
 		}
 	}, [isTimerActive, correct, timerCurrent])
 	function getScore() {
-		if (correct.length > 0) {
-			return (
-				<span>
-					{correct.filter((item) => item).length}/{correct.length},{' '}
-					{(
-						(correct.filter((item) => item).length /
-							correct.length) *
-						100
-					).toFixed(2)}
-					%
-				</span>
-			)
+		const data = []
+		if (correct.length == 0) {
+			data.push('-')
+			data.push('-')
+			data.push('-')
 		} else {
-			return (
-				<span>
-					{correct.filter((item) => item).length}/{correct.length}
-				</span>
-			)
+			data.push(correct.filter((item) => item).length)
+			data.push(correct.length)
+			data.push(((data[0] / data[1]) * 100).toFixed(0))
 		}
+		return data
 	}
-	return (
-		<div>
-			Game module <button onClick={toggleMode}>Menu</button>
-			{getScore()}{' '}
-			<span>{Math.round(symbolScore)} symbols per minute</span>
-			<div>
-				{text.split('').map((item, index) => {
-					return (
-						<span
-							key={index}
-							className={[
-								correct[index]
-									? 'correct'
-									: index == cursor
-									? 'active'
-									: index < cursor
-									? 'incorrect'
-									: null,
-							]}
-							title={
-								mistakes[index]
-									? 'You typed: ' + mistakes[index]
-									: null
-							}
-						>
-							{item}
-						</span>
-					)
-				})}
-			</div>
-			<div className={[popup ? 'show' : 'hide']}>
-				<button onClick={newGame}>Start again</button>
-				<button onClick={toggleMode}>To menu</button>
+	return isLoading ? (
+		<Spinner animation='border'></Spinner>
+	) : (
+		<div style={{width: 100 + '%'}}>
+			<Navbar>
+				<Container>
+					<Col className='centered'>
+						Correct: {getScore()[0]}/{getScore()[1]}
+					</Col>
+					<Col className='centered'>Accuracy: {getScore()[2]}%</Col>
+					<Col className='centered'>
+						Speed: {Math.round(symbolScore)} per minute
+					</Col>
+				</Container>
+			</Navbar>
+			<Row>
+				<Col className={'text'}>
+					{text.split('').map((item, index) => {
+						return (
+							<span
+								key={index}
+								className={[
+									correct[index]
+										? 'correct'
+										: index == cursor
+										? 'active'
+										: index < cursor
+										? 'incorrect'
+										: null,
+								]}
+								title={
+									mistakes[index]
+										? 'You typed: ' + mistakes[index]
+										: null
+								}
+							>
+								{item}
+							</span>
+						)
+					})}
+				</Col>
+			</Row>
+			<div
+				className={[popup ? 'show' : 'hide']}
+				style={{justifyContent: 'center'}}
+			>
+				<ButtonGroup>
+					<Button onClick={newGame}>Start again</Button>
+					<Button onClick={toggleMode} variant='outline-primary'>
+						To menu
+					</Button>
+				</ButtonGroup>
 			</div>
 		</div>
 	)
